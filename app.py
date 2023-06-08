@@ -10,6 +10,9 @@ print("Hello")
 app=Flask(__name__)
 ## load the model
 dtmodel=pickle.load(open('completeDT.pkl','rb'))
+lrmodel = pickle.load(open('logisticRegression.pkl','rb'))
+knnmodel = pickle.load(open('knnmodel.pkl','rb'))
+svmmodel = pickle.load(open('svmmodel.pkl','rb'))
 
 
 @app.route('/')
@@ -26,39 +29,59 @@ def predict_api():
     print(output[0])
     return jsonify(output[0])
 
+#Get method for Decision Tree
+@app.route('/DT-GET')
+def DTGET():
+    return render_template("decisionTree.html")
+
+#Get method for Logistic Regression
+@app.route('/LR-GET')
+def LRGET():
+    return render_template("logisticRegression.html")
+
+#Get method for SVM
+@app.route('/SVM-GET')
+def SVMGET():
+    return render_template("SVM.html")
+
+#Get method for KNN
+@app.route('/KNN-GET')
+def KNNGET():
+    return render_template("KNN.html")
+
+
 @app.route('/predict',methods=['POST'])
 def predict():
     data=[float(x) for x in request.form.values()]
     final_input=np.array(data).reshape(1,-1)
     print(final_input)
     output=dtmodel.predict(final_input)[0]
-    return render_template("home.html",prediction_text="The House price prediction is {}".format(output))
+    return render_template("home.html",prediction_text="The classification prediction for choosen model is {}".format(output))
 
-    
-    #data = [float(x) for x in request.form.values()]
-    #data1 = request.form['AGE']
-    #data2 = request.form['JOB']
-    #data3 = request.form['MARITAL']
-    #data4 = request.form['EDUCATION']
-    #data5 = request.form['DEFAULT']
-    # data6 = request.form['BALANCE']
-    # data7 = request.form['HOUSING']
-    # data8 = request.form['LOAN']
-    # data9 = request.form['CONTACT']
-    # data10 = request.form['DAY']
-    # data11 = request.form['MONTH']
-    # data12 = request.form['DURATION']
-    # data13 = request.form['CAMPAIGN']
-    # data14 = request.form['PDAYS']
-    # data15 = request.form['PREVIOUS']
-    # data16 = request.form['POUTCOME']
-    # arr = np.array([[data1, data2, data3, data4, data5, data6, data7, data8, data9, data10, data11, data12, data13, data14, data15, data16]]).reshape(1,-1)
-    #arr = np.array(data).reshape(1,-1)
-    # print(arr)
-    # output = dtmodel.predict(arr)
-    # render_template("home.html",prediction_text="The output of data is {}".format(output))
-   # return render_template('after.html',data=output)
+@app.route('/predictLR',methods=['POST'])
+def predictLR():
+    data=[float(x) for x in request.form.values()]
+    final_input=np.array(data).reshape(1,-1)
+    print(final_input)
+    output=lrmodel.predict(final_input)[0]
+    return render_template("home.html",prediction_text="The Logistic Regression model prediction for choosen input is {}".format(output))
 
+@app.route('/predictKNN',methods=['POST'])
+def predictKNN():
+    data=[float(x) for x in request.form.values()]
+    final_input=np.array(data).reshape(1,-1)
+    print(final_input)
+    output=knnmodel.predict(final_input)[0]
+    return render_template("home.html",prediction_text="The KNN model prediction for choosen input is {}".format(output))
+
+@app.route('/predictSVM',methods=['POST'])
+def predictSVM():
+    data=[float(x) for x in request.form.values()]
+    final_input=np.array(data).reshape(1,-1)
+    print(final_input)
+    output=svmmodel.predict(final_input)[0]
+    return render_template("home.html",prediction_text="The SVM model prediction for choosen input is {}".format(output))    
+   
 if __name__=="__main__":
     app.run(debug=True)
 
